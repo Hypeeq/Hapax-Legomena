@@ -37,10 +37,17 @@ int tallyWordsInFile(char *filename, LLNode **wordLists, int maxLen)
 	}
 
 	/** TODO: ensure that all of the word list heads are NULL */
+	
 	for(i=0;i<maxLen;i++)
 	{
-		wordLists[i]= NULL;    																					//completed
-
+																						//completed
+	 while(wordLists[i]!=NULL)
+	 {
+		LLNode *temp= wordLists[i];
+		wordLists[i]= wordLists[i]->next;    	
+		 free(temp->key);            // Free the memory for the key string
+   		 free(temp);      
+	 }
 	}
 	
 	// read each word from the file using the WordExtractor,
@@ -79,57 +86,81 @@ updateWordInTallyList(LLNode **wordListHeads, int maxLen, char *word)
 
 	/* TODO: look up the word in the correct list to see
 	 * if we have already seen it */
-	int boolean=0;
-	int len = strlen(word);
-	int tally=0;
-	int successCheck=0;
-	LLNode *current = wordListHeads[len-1];
-	LLNode * newNode;
-	while(current != NULL)
-	{																					//completed
+	 int len = strlen(word);
 
-		if(strcmp(word, current->key) == 0){
-			boolean=1;
-			break;
-		}
-		else{
-			boolean=0;
-		}
-		tally++;
-	}
+    // Check if the word length is within the specified range
+    if (len < 1 || len > maxLen) {
+        return 0; // Invalid word length, do nothing
+    }
+
+    LLNode *current = wordListHeads[len];
+
+    // Search for the word in the linked list
+    while (current != NULL) {
+        if (strcmp(current->key, word) == 0) {
+            // Word already exists in the list, increment its tally
+            current->value = current->value+1;
+            return 1; // Word updated successfully
+        }
+        current = current->next;
+    }
+
+    // If the word is not found in the list, create a new node
+    LLNode *newNode = llNewNode(strdup(word), 1); // Initialize tally to 1
+    if (newNode == NULL) {
+        return 0; // Handle memory allocation error
+    }
+
+    // Append the new node to the list
+  // llAppend(wordListHeads[len-1],newNode);
+   newNode->next=wordListHeads[len];
+   wordListHeads[len]=newNode;
+
+    return 1; // New word added successfully
+}
 
 
 	/* TODO: if the word is in the list, then update the tally
 	 * in the node and we are done so return success */
-	if(boolean==0)
-	{
-		if (current == NULL){
-		newNode = llNewNode(word,1);
-		}
-		else{
-			newNode = llNewNode(word,tally+1);
-			 wordListHeads[len - 1] = llAppend(wordListHeads[len - 1], newNode);
-		}
-		successCheck=1;
-	}
-	else if(boolean==1)
-	{																					//completed
-		printf("Success");
-	}
-	if(successCheck==1)
-	{
-		printf("Success");
-		return 1;
-	}
-	else if(successCheck==0)
-	{
-		printf("Process was Unsuccessful");
-		return 0;
-	}
+	// if(boolean==0)
+	// {
+	// 	if (current == NULL){
+	// 	newNode = llNewNode(word,1);
+	// 	}
+	// 	else{
+	// 		newNode = llNewNode(word,tally+1);
+	// 		 wordListHeads[len - 1] = llAppend(wordListHeads[len - 1], newNode);
+	// 	}
+	// 	successCheck=1;
+	// }
+	// else if(boolean==1)
+	// {																					//completed
+	// 	printf("Success");
+	// }
+
+
+	// if(successCheck==1)
+	// {
+	// 	printf("Success");
+	// 	return 1;
+	// }
+	// else if(successCheck==0)
+	// {
+	// 	printf("Process was Unsuccessful");
+	// 	return 0;
+	// }
+	
+	// 	while(current!=NULL)
+	// 	{
+	// 	if(strcmp(word,current->key) == 0)
+	// 	{
+	// 		current->value+=1;
+	// 	}
+	// 	current = current->next;
+	// 	}
+	
 
 	/** TODO: otherwise add it to the list */
 
 
-	/** return success if no error */
-}
 

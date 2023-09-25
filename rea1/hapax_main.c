@@ -25,7 +25,7 @@ deleteWordLists(LLNode **wordListHeads, int maxLen)
 {
 	int i;
 
-	for (i = 0; i < maxLen; i++) {
+	for (i = 0; i <= maxLen; i++) {
 		if (wordListHeads[i] != NULL) {
 			llFree(wordListHeads[i], deleteKey, NULL);
 			wordListHeads[i] = NULL;
@@ -61,14 +61,30 @@ printData(char *filename, LLNode *wordListHeads[], int maxLen)
 }
 
 /** TODO: print out only the hapax legomena in a word list */
-int
-printHapax(char *filename, LLNode *wordListHeads[],
-		int maxLen, int hapaxLength)
-{
+int printHapax(char *filename, LLNode *wordListHeads[],
+		int maxLen, int hapaxLength){
+
+	LLNode *node;
+    int i;
+
+    printf("Hapax legomena from file '%s' with length %d:\n", filename, hapaxLength);
+
+    // Iterate through the specified word list (based on hapaxLength)
+    node = wordListHeads[hapaxLength];
+    if (node != NULL) {
+        while (node != NULL){
+            // Print words that have a count of 1 (hapax legomena)
+            if (node->value == 1) {
+                printf("    '%s' \n", node->key);
+            }
+            node = node->next;
+        }
+    }
 	// Add your code here
 
 	return 1;
 }
+
 
 /* print out the command line help */
 void
@@ -100,66 +116,59 @@ usage()
 }
 
 
-/**
- * Program mainline
- */
-
 // define the maximum length of word we will look for, and by extension,
 // the number of entries that must be in the array of word lists
 #define	MAX_WORD_LEN	24
 
-int
-main(int argc, char **argv)
-{
-	int i, shouldPrintData = 0, didProcessing = 0, printHapaxLength = -1;
+int main(int argc, char **argv) {
+    int i, shouldPrintData = 0, didProcessing = 0, printHapaxLength = -1;
 
-	/** TODO: allocate an array of list heads of the required size */
+    LLNode *wordListHeads[MAX_WORD_LEN + 1];
+    memset(wordListHeads, 0, sizeof(wordListHeads));  // Initialize to NULL
 
-	for (i = 1; i < argc; i++) {
-		if (argv[i][0] == '-') {
-			// TODO: Put your code to process the command line options here
+    for (i = 1; i < argc; i++) {
+        if (argv[i][0] == '-') {
+            if (strcmp(argv[i], "-d") == 0) {
+                shouldPrintData = 1;
+            } else if (strcmp(argv[i], "-h") == 0) {
+                usage();
+            } else if (strcmp(argv[i], "-l") == 0) {
+                if (i + 1 < argc) {
+                    printHapaxLength = atoi(argv[i + 1]);
+                    i++;  // Skip the next argument (length)
+                } else {
+                    fprintf(stderr, "Error: Missing length argument for -l option.\n");
+                    usage();
+                }
+            } else {
+                fprintf(stderr, "Error: Unknown option '%s'\n", argv[i]);
+                usage();
+            }
+        } else {
+            if (tallyWordsInFile(argv[i], wordListHeads, MAX_WORD_LEN) == 0) {
+                fprintf(stderr, "Error: Processing '%s' failed -- exiting\n", argv[i]);
+                return 1;
+            }
 
+            didProcessing = 1;
+		
+            printf("Tally loaded\n");
 
-		} else {
+            if (shouldPrintData) {
+                printData(argv[i], wordListHeads, MAX_WORD_LEN);
+            }
 
-//			// Once you have set up your array of word lists, you
-//			// should be able to pass them into this function
-//			if (tallyWordsInFile(argv[i], wordListHeads, MAX_WORD_LEN) == 0) {
-//				fprintf(stderr, "Error: Processing '%s' failed -- exitting\n",
-//						argv[i]);
-//				return 1;
-//			}
+            if (printHapaxLength >= 1) {
+                printHapax(argv[i], wordListHeads, MAX_WORD_LEN, printHapaxLength);
+            }
+        }
+    }
 
-			didProcessing = 1;
-
-			printf("Tally loaded\n");
-
-			/**
-			 * conditionally print out all the words loaded, based
-			 * on the command line option
-			 */
-			if (shouldPrintData) {
-//				// this should also work once you have allocated the
-//				// array of lists properly
-//				printData(argv[i], wordListHeads, MAX_WORD_LEN);
-			}
-
-			/** print out all the hapax legomena that we have found */
-//			printHapax(argv[i], wordListHeads, MAX_WORD_LEN);
-
-			// TODO: clean up any memory that we have allocated in this loop
-		}
-	}
-
-	if ( ! didProcessing ) {
-		fprintf(stderr, "No data processed -- provide the name of"
-				" a file on the command line\n");
-		usage();
-		return 1;
-	}
-
-	// TODO: clean up any remaining memory that we have allocated
-
-	return 0;
+    if (!didProcessing) {
+        fprintf(stderr, "No data processed -- provide the name of a file on the command line\n");
+        usage();
+        return 1;
+    }
+    deleteWordLists(wordListHeads, MAX_WORD_LEN);
+    return 0;
 }
-
