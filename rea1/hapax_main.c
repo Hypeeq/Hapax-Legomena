@@ -65,7 +65,7 @@ int printHapax(char *filename, LLNode *wordListHeads[],
 		int maxLen, int hapaxLength){
 
 	LLNode *node;
-    int i;
+    
 
     printf("Hapax legomena from file '%s' with length %d:\n", filename, hapaxLength);
 
@@ -122,7 +122,7 @@ usage()
 
 int main(int argc, char **argv) {
     int i, shouldPrintData = 0, didProcessing = 0, printHapaxLength = -1;
-
+	
     LLNode *wordListHeads[MAX_WORD_LEN + 1];
     memset(wordListHeads, 0, sizeof(wordListHeads));  // Initialize to NULL
 
@@ -140,7 +140,9 @@ int main(int argc, char **argv) {
                     fprintf(stderr, "Error: Missing length argument for -l option.\n");
                     usage();
                 }
-            } else {
+            }
+			
+			else {
                 fprintf(stderr, "Error: Unknown option '%s'\n", argv[i]);
                 usage();
             }
@@ -163,6 +165,14 @@ int main(int argc, char **argv) {
             }
         }
     }
+	
+	if(argc==2)
+			{
+				for(int i=1;i<=MAX_WORD_LEN;i++)
+				{
+					printHapax(argv[1], wordListHeads, MAX_WORD_LEN,i);
+				}
+			}
 
     if (!didProcessing) {
         fprintf(stderr, "No data processed -- provide the name of a file on the command line\n");
