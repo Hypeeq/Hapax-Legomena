@@ -35,19 +35,17 @@ int tallyWordsInFile(char *filename, LLNode **wordLists, int maxLen)
 		fprintf(stderr, "Failed creating extractor for '%s'\n", filename);
 		return 0;
 	}
-
-	/** TODO: ensure that all of the word list heads are NULL */
 	
 	for(i=0;i<maxLen;i++)
 	{
 																						
-	 while(wordLists[i]!=NULL)    					//completed
+	 while(wordLists[i]!=NULL)    				
 	 {
 		LLNode *temp= wordLists[i];
 		wordLists[i]= wordLists[i]->next;    	
 		 free(temp->key);            // Free the memory for the key string
    		 free(temp);   
-		 temp->value=0;   
+		 
 	 }
 	}
 	
@@ -78,15 +76,12 @@ int tallyWordsInFile(char *filename, LLNode **wordLists, int maxLen)
 	return 1;
 }
 
-/**
- * TODO: Either update the tally in the list, or add it to the list
- */
+
 static int
 updateWordInTallyList(LLNode **wordListHeads, int maxLen, char *word)
 {
 
-	/* TODO: look up the word in the correct list to see
-	 * if we have already seen it */
+	
 	 int len = strlen(word);
 
     // Check if the word length is within the specified range
@@ -112,8 +107,6 @@ updateWordInTallyList(LLNode **wordListHeads, int maxLen, char *word)
         return 0; // Handle memory allocation error
     }
 
-    // Append the new node to the list
-  // llAppend(wordListHeads[len-1],newNode);
    newNode->next=wordListHeads[len];
    wordListHeads[len]=newNode;
 
@@ -124,7 +117,6 @@ updateWordInTallyList(LLNode **wordListHeads, int maxLen, char *word)
 	
 	
 
-	/** TODO: otherwise add it to the list */
-
+	
 
 

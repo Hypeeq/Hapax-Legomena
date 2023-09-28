@@ -60,27 +60,26 @@ printData(char *filename, LLNode *wordListHeads[], int maxLen)
 	return 1;
 }
 
-/** TODO: print out only the hapax legomena in a word list */
+
 int printHapax(char *filename, LLNode *wordListHeads[],
 		int maxLen, int hapaxLength){
 
 	LLNode *node;
     
 
-    printf("Hapax legomena from file '%s' with length %d:\n", filename, hapaxLength);
-
+   
     // Iterate through the specified word list (based on hapaxLength)
     node = wordListHeads[hapaxLength];
     if (node != NULL) {
         while (node != NULL){
             // Print words that have a count of 1 (hapax legomena)
             if (node->value == 1) {
-                printf("    '%s' \n", node->key);
+                printf("	%s \n", node->key);
             }
             node = node->next;
         }
     }
-	// Add your code here
+	
 
 	return 1;
 }
@@ -161,18 +160,21 @@ int main(int argc, char **argv) {
             }
 
             if (printHapaxLength >= 1) {
+				 printf("Hapax legomena from file '%s'\n", argv[1]);
+
                 printHapax(argv[i], wordListHeads, MAX_WORD_LEN, printHapaxLength);
             }
         }
     }
+	if(argc==2){
+		 printf("Hapax legomena from file '%s'\n", argv[1]);
+	 for (int len = 0; len < MAX_WORD_LEN; len++) {
+        if (wordListHeads[len] != NULL) {
+            printHapax(argv[1], wordListHeads, MAX_WORD_LEN, len);
+        }
+    }}
 	
-	if(argc==2)
-			{
-				for(int i=1;i<=MAX_WORD_LEN;i++)
-				{
-					printHapax(argv[1], wordListHeads, MAX_WORD_LEN,i);
-				}
-			}
+		
 
     if (!didProcessing) {
         fprintf(stderr, "No data processed -- provide the name of a file on the command line\n");
